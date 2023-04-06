@@ -44,11 +44,9 @@ def category_detail(request, category_id):
 
 def products_in_categories(request, category_id):
   category = Category.objects.get(pk = category_id)
-  # print(category.name)
   finding_products = []
   for product in products:
-      if product['category_name'] == category.name:
-        # print(product['category_name'])
+      if product['category_id'] == category.id:
         finding_products.append(product)
   print(finding_products)
   if len(finding_products) != 0:
