@@ -9,51 +9,44 @@ from api.models import Company, Vacancy
 
 
 def list_of_companies(request):
-    companies = []
-    for company in Company.objects.all():
-        companies.append(company.to_json())
-    return JsonResponse(companies,safe=False,json_dumps_params={'indent':2})
+    # if request.method == 'GET':
+    companies = Company.objects.all()
+    companies_json = [p.to_json() for p in companies]
+    return JsonResponse(companies_json,safe=False)
+
 
 def company_detail(request, company_id):
-    companies = []
-    
-    for company in Company.objects.all():
-        companies.append(company.to_json())
-        
-    for company in companies:
-        # print(company[id])
-        if company['id'] == company_id:
-            return JsonResponse(company,safe=False,json_dumps_params={'indent':2})
-        
-    return JsonResponse({'error':'Company not found'})
+    try:
+        company = Company.objects.get(id = company_id)
+    except Company.DoesNotExist as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    # if request.method == 'GET':
+    return JsonResponse(company.to_json(),safe=False)
 
 
 def list_of_vacancies(request):
-    vacancies = []
-    for vacancy in Vacancy.objects.all():
-        vacancies.append(vacancy.to_json())
-    return JsonResponse(vacancies,safe=False,json_dumps_params={'indent':2})
+    # if request.method == 'GET':
+    vacancies = Vacancy.objects.all()
+    vacancies_json = [p.to_json() for p in vacancies]
+    return JsonResponse(vacancies_json,safe=False)
+        
 
 def vacancy_detail(request,vacancy_id):
-    vacancies = []
-    for vacancy in Vacancy.objects.all():
-        vacancies.append(vacancy.to_json())
-    for vacancy in vacancies:
-        if vacancy['id'] == vacancy_id:
-            return JsonResponse(vacancy,safe=False,json_dumps_params={'indent':2})
-    return JsonResponse({'error':'Vacancy not found'})
+    try:
+        vacancy = Vacancy.objects.get(id = vacancy_id)
+    except Vacancy.DoesNotExist as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    # if request.method == 'GET':
+    return JsonResponse(vacancy.to_json(),safe=False)
 
 def vacancies_of_company(request, company_id):
+    vacancies = Vacancy.objects.all()
+    vacancies_json = [p.to_json() for p in vacancies]
+
     company = Company.objects.get(pk= company_id)
-
-    print(company.id)
-    vacancies = []
-    for vacancy in Vacancy.objects.all():
-        vacancies.append(vacancy.to_json())  
-
     matching_vacancies = []
 
-    for vacancy in vacancies:
+    for vacancy in vacancies_json:
         if vacancy['company'] == company.id:
             matching_vacancies.append(vacancy)
 
