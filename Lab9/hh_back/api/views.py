@@ -10,19 +10,21 @@ from api.models import Company, Vacancy
 
 def list_of_companies(request):
     companies = []
-    print(companies)
     for company in Company.objects.all():
         companies.append(company.to_json())
-    print(companies)
     return JsonResponse(companies,safe=False,json_dumps_params={'indent':2})
 
-def company_detail(request,company_id):
+def company_detail(request, company_id):
     companies = []
+    
     for company in Company.objects.all():
         companies.append(company.to_json())
+        
     for company in companies:
+        # print(company[id])
         if company['id'] == company_id:
             return JsonResponse(company,safe=False,json_dumps_params={'indent':2})
+        
     return JsonResponse({'error':'Company not found'})
 
 
@@ -41,14 +43,21 @@ def vacancy_detail(request,vacancy_id):
             return JsonResponse(vacancy,safe=False,json_dumps_params={'indent':2})
     return JsonResponse({'error':'Vacancy not found'})
 
-def vacancies_of_company(request,company_id):
+def vacancies_of_company(request, company_id):
+    company = Company.objects.get(pk= company_id)
+
+    print(company.id)
     vacancies = []
     for vacancy in Vacancy.objects.all():
-        vacancies.append(vacancy.to_json)
+        vacancies.append(vacancy.to_json())  
 
-    matching_vacancies = list(filter(lambda x: x.company == company_id,vacancies))
+    matching_vacancies = []
 
-    if matching_vacancies.count != 0:
+    for vacancy in vacancies:
+        if vacancy['company'] == company.id:
+            matching_vacancies.append(vacancy)
+
+    if len(matching_vacancies) != 0:
         return JsonResponse(matching_vacancies,safe=False,json_dumps_params={'indent':2})
     return JsonResponse({'error':'Vacancies not found'})
 
