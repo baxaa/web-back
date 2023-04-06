@@ -64,9 +64,9 @@ def vacancies_of_company(request, company_id):
 def top_ten_vacancies(request):
     vacancies = []
     for vacancy in Vacancy.objects.all():
-        vacancies.append(vacancy.to_json)
-    vacancies.sort()
-    vacancies.reverse()
-    if(vacancies.count != 0):
-        return JsonResponse(vacancies[0:11],safe=False,json_dumps_params={'indent':2})
+        vacancies.append(vacancy.to_json())
+    sorted_array = sorted(vacancies, key = lambda x : x['salary'], reverse= True)
+    # vacancies.reverse()
+    if(sorted_array.count != 0):
+        return JsonResponse(sorted_array[0:11],safe=False,json_dumps_params={'indent':2})
     return JsonResponse({'error':'Error404'})
